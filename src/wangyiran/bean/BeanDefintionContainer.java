@@ -1,5 +1,6 @@
 package wangyiran.bean;
 
+import wangyiran.bean.scope.SingleScope;
 import wangyiran.bean.tool.ClassTool;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,9 +12,34 @@ import java.util.Map;
  */
 public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
-    public void regist(Class beanAClass) {
+    private SingleScope scope;
+    public void regist(Class beanAClass, Class<SingleScope> singleScope) {
         BeanDefinition definition = new BeanDefinition(beanAClass);
         beanDefinitionMap.put(definition.getName(),definition);
+        resolveScope(singleScope);
+    }
+
+    private void resolveScope(Class<SingleScope> singleScope) {
+        if (scope == null) {
+            if (singleScope != null)
+                {
+                    try {
+                        this.scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
+                         } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                    }
+                }else {
+                try {
+                    this.scope = singleScope.newInstance();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public BeanDefinition getBeanDefinition(Class beanAClass) {
@@ -22,6 +48,10 @@ public class BeanDefintionContainer {
     }
 
     public Object getBean(Class beanAClass) throws Exception {
+       Object bean = scope.lookup(beanAClass);
+        if (bean != null){
+            return bean;
+        }
        BeanDefinition definition =  getBeanDefinition(beanAClass);
         if (definition == null){
             return null;
@@ -46,7 +76,13 @@ public class BeanDefintionContainer {
                 }
             }
         }
-        return definition.ctorInjectPoint.constructor.newInstance(beanArgs);
+        Object object = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
+        registScope(definition.beanClass,object);
+        return object;
+    }
+
+    private void registScope(Class beanClass, Object object) {
+        scope.regist(beanClass,object);
     }
 
 }
