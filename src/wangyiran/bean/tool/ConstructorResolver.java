@@ -3,6 +3,7 @@ package wangyiran.bean.tool;
 import wangyiran.bean.ConstructorDescription;
 import wangyiran.bean.CtorInjectPoint;
 import wangyiran.bean.annotation.InjectConstructor;
+import wangyiran.bean.factory.CtorInjectPointFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -13,6 +14,7 @@ import java.util.List;
  * Created by wangyiran on 25/2/2016.
  */
 public class ConstructorResolver {
+    private CtorInjectPointFactory ctorInjectPointFactory;
     public CtorInjectPoint resolveCtorInjectPoint(Class beanClass) {
         ClassDescription classDescription = ClassDescription.lookup(beanClass);
         Constructor[] constructors = classDescription.getAllCtors();
@@ -35,10 +37,7 @@ public class ConstructorResolver {
             annotationCtor = defaultCtor;
         }
 
-        return createInjectConstructor(annotationCtor,annotationCtor.getParameterTypes());
+        return ctorInjectPointFactory.createInjectConstructor(annotationCtor,annotationCtor.getParameterTypes());
     }
 
-    private CtorInjectPoint createInjectConstructor(Constructor annotationCtor, Class[] parameterTypes) {
-        return new CtorInjectPoint(annotationCtor,parameterTypes);
-    }
 }
