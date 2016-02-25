@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by wangyiran on 25/2/2016.
  */
-public class SingleScope {
+public class SingleScope implements Scope{
     private Map<Class,Object> cache = new HashMap<>();
     public Object lookup(Class beanAClass) {
         return cache.get(beanAClass);

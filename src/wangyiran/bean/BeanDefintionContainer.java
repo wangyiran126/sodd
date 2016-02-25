@@ -1,5 +1,6 @@
 package wangyiran.bean;
 
+import wangyiran.bean.scope.Scope;
 import wangyiran.bean.scope.SingleScope;
 import wangyiran.bean.tool.ClassTool;
 
@@ -12,34 +13,38 @@ import java.util.Map;
  */
 public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
-    private SingleScope scope;
-    public void regist(Class beanAClass, Class<SingleScope> singleScope) {
+    private Scope scope;
+    public void regist(Class beanAClass, Class<? extends Scope> singleScope) {
         BeanDefinition definition = new BeanDefinition(beanAClass);
         beanDefinitionMap.put(definition.getName(),definition);
-        resolveScope(singleScope);
+        if (this.scope == null){
+            this.scope = resolveScope(singleScope);
+        }
     }
 
-    private void resolveScope(Class<SingleScope> singleScope) {
-        if (scope == null) {
-            if (singleScope != null)
+    private  <T extends Scope> Scope resolveScope(Class<T> singleScope) {
+        Scope scope = null;
+        if (this.scope == null) {
+            if (singleScope == null)
                 {
                     try {
-                        this.scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
+                        scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
                          } catch (InstantiationException e) {
                             e.printStackTrace();
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                     }
                 }else {
-                try {
-                    this.scope = singleScope.newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                            scope = singleScope.newInstance();
+                        } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
             }
         }
+        return scope;
     }
 
     public BeanDefinition getBeanDefinition(Class beanAClass) {
