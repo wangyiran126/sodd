@@ -5,6 +5,7 @@ package wangyiran.bean;
  */
 
 import wangyiran.bean.annotation.InjectConstructor;
+import wangyiran.bean.factory.CtorInjectPointFactory;
 import wangyiran.bean.tool.ClassDescription;
 import wangyiran.bean.tool.ConstructorResolver;
 import wangyiran.bean.tool.InjectPointConstructor;
@@ -22,7 +23,7 @@ public class Resolver {
     private ConstructorResolver constructorResolver;
 
     public Resolver() {
-        this.constructorResolver = new ConstructorResolver();
+        this.constructorResolver = new ConstructorResolver(new CtorInjectPointFactory());
     }
 
     public CtorInjectPoint createCtorInjectPoint(Class beanClass) {

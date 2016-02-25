@@ -15,6 +15,11 @@ import java.util.List;
  */
 public class ConstructorResolver {
     private CtorInjectPointFactory ctorInjectPointFactory;
+
+    public ConstructorResolver(CtorInjectPointFactory ctorInjectPointFactory) {
+        this.ctorInjectPointFactory = ctorInjectPointFactory;
+    }
+
     public CtorInjectPoint resolveCtorInjectPoint(Class beanClass) {
         ClassDescription classDescription = ClassDescription.lookup(beanClass);
         Constructor[] constructors = classDescription.getAllCtors();
