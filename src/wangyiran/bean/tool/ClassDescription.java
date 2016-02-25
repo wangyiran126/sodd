@@ -2,6 +2,7 @@ package wangyiran.bean.tool;
 
 import wangyiran.bean.ConstructorDescription;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +11,8 @@ import java.util.Map;
  */
 public class ClassDescription {
     private Class beanClass;
-    private ConstructorDescription[] allCtorDescription;
-    private Ctors ctors;
+    private Constructor[] allCtors;
+    private Integer usageCount = 0;
 
     public ClassDescription(Class beanClass) {
         this.beanClass = beanClass;
@@ -19,10 +20,21 @@ public class ClassDescription {
 
     public static ClassDescription lookup(Class beanClass) {
         ClassDescription classDescription = Inspects.cacheInspect.lookup(beanClass);
-        if (classDescription == null){
-            classDescription = new ClassDescription(beanClass);
-        }
         return classDescription;
     }
 
+    public Constructor[] getAllCtors() {
+        if (allCtors == null){
+            allCtors = this.beanClass.getDeclaredConstructors();
+        }
+        return allCtors;
+    }
+
+    public void increase() {
+        ++usageCount;
+    }
+
+    public Integer getUsageCount() {
+        return usageCount;
+    }
 }

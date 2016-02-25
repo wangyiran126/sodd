@@ -4,6 +4,7 @@ import regist.BeanA;
 import regist.BeanB;
 import wangyiran.bean.BeanDefinition;
 import wangyiran.bean.BeanDefintionContainer;
+import wangyiran.bean.tool.Inspects;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -19,9 +19,8 @@ import java.util.List;
  */
 public class Resolver {
     public CtorInjectPoint createCtorInjectPoint(Class beanClass) {
-//        ClassDescription classDescription = ClassDescription.lookup(beanClass);
-
-        Constructor[] constructors = beanClass.getDeclaredConstructors();
+        ClassDescription classDescription = ClassDescription.lookup(beanClass);
+        Constructor[] constructors = classDescription.getAllCtors();
         List<ConstructorDescription> constructorDescriptions = new ArrayList<>(constructors.length);
         Constructor annotationCtor = null;//注解的构造器
         Constructor defaultCtor = null;
