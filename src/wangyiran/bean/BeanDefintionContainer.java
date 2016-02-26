@@ -1,5 +1,6 @@
 package wangyiran.bean;
 
+import wangyiran.bean.annotation.ScopeAnnotation;
 import wangyiran.bean.scope.Scope;
 import wangyiran.bean.scope.SingleScope;
 import wangyiran.bean.tool.ClassTool;
@@ -15,7 +16,7 @@ public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
     private Map<Class<? extends Scope>,Scope> scopes = new HashMap<>();
     public void regist(Class beanAClass, Class<? extends Scope> singleScope) {
-        Scope scope = instantiateScope(singleScope);
+        Scope scope = instantiateScope(beanAClass,singleScope);
         instantiateBeanDefinition(beanAClass,scope);
     }
 
@@ -25,31 +26,31 @@ public class BeanDefintionContainer {
     }
 
 
-    private <T extends Scope> Scope instantiateScope(Class<T> scopeClass) {
+    private  Scope instantiateScope(Class beanAClass, Class<? extends Scope> scopeClass) {
         Scope scope = scopes.get(scopeClass);
         if (scope != null){
             return scope;
         }
-        if (scopeClass == null)
-        {
-            try {
-                scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        if (scopeClass == null) {
+            scopeClass = resolveScopeOfAnnotation(beanAClass);
+            if (scopeClass == null){
+                scopeClass =  SingleScope.class;
             }
-        }else {
-            try {
-                scope = scopeClass.newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        }
+        try {
+            scope = scopeClass.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
         scopes.put(scopeClass,scope);
         return scope;
+    }
+
+    private Class<? extends Scope> resolveScopeOfAnnotation(Class beanAClass) {
+        ScopeAnnotation scopeAnnotation = (ScopeAnnotation) beanAClass.getAnnotation(ScopeAnnotation.class);
+        return scopeAnnotation != null ? scopeAnnotation.scope() : null;
     }
 
     public BeanDefinition getBeanDefinition(Class beanAClass) {
@@ -59,6 +60,9 @@ public class BeanDefintionContainer {
 
     public Object getBean(Class beanAClass) throws Exception {
         BeanDefinition definition =  getBeanDefinition(beanAClass);
+        if (definition == null){
+            throw new Exception(beanAClass+"没有regist");
+        }
         Object bean = definition.scopelookup();
         if (bean != null){
             return bean;

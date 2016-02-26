@@ -2,6 +2,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import regist.BeanA;
 import regist.BeanB;
+import regist.session.SessionAnnoBean;
 import regist.session.SessionBeanA;
 import regist.utils.ServletsMockitoUtils;
 import wangyiran.bean.BeanDefinition;
@@ -71,6 +72,23 @@ public class TestRegister {
         SessionBeanA beanA = (SessionBeanA) container.getBean(SessionBeanA.class);
         Assert.assertNotNull(beanA);
         SessionBeanA beanA2 = (SessionBeanA) container.getBean(SessionBeanA.class);
+        Assert.assertEquals(beanA,beanA2);
+    }
+
+    @Test
+    public void testAnnotationScope() throws Exception {
+        HttpSession httpSession = createSession();
+        HttpServletRequest httpRequest = createHttpRequest(httpSession);
+        ServletRequestEvent event =ServletsMockitoUtils.createServletRequestEvent(httpRequest);
+        RequestContextListener requestContextListener = new RequestContextListener();
+        HttpServletRequest request = (HttpServletRequest) event.getServletRequest();
+        requestContextListener.requestInitialized(event);
+        BeanDefintionContainer container = new BeanDefintionContainer();
+
+        container.regist(SessionAnnoBean.class, null);
+        SessionAnnoBean beanA = (SessionAnnoBean) container.getBean(SessionAnnoBean.class);
+        Assert.assertNotNull(beanA);
+        SessionAnnoBean beanA2 = (SessionAnnoBean) container.getBean(SessionAnnoBean.class);
         Assert.assertEquals(beanA,beanA2);
     }
 
