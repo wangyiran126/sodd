@@ -1,5 +1,6 @@
 package wangyiran.bean;
 
+import wangyiran.bean.scope.Scope;
 import wangyiran.bean.tool.ClassTool;
 
 import java.lang.reflect.Constructor;
@@ -14,11 +15,12 @@ public class BeanDefinition {
     private String name;
     public Resolver resolver;
     public CtorInjectPoint ctorInjectPoint;
-    private Type[] actualType;
-    public BeanDefinition(Class beanAClass) {
+    public Scope scope;
+    public BeanDefinition(Class beanAClass, Scope scope) {
         this.beanClass = beanAClass;
         this.name = beanAClass.getName();
         resolver = new Resolver();
+        this.scope = scope;
     }
 
 
@@ -27,8 +29,11 @@ public class BeanDefinition {
     }
 
 
-    public Class getBeanClass() {
-        return beanClass;
+    public Object scopelookup() {
+        return scope.lookup(beanClass);
     }
 
+    public void registScope(Object bean) {
+        scope.regist(beanClass,bean);
+    }
 }

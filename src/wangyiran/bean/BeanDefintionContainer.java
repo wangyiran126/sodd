@@ -13,37 +13,42 @@ import java.util.Map;
  */
 public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
-    private Scope scope;
+    private Map<Class<? extends Scope>,Scope> scopes = new HashMap<>();
     public void regist(Class beanAClass, Class<? extends Scope> singleScope) {
-        BeanDefinition definition = new BeanDefinition(beanAClass);
-        beanDefinitionMap.put(definition.getName(),definition);
-        if (this.scope == null){
-            this.scope = resolveScope(singleScope);
-        }
+        Scope scope = instantiateScope(singleScope);
+        instantiateBeanDefinition(beanAClass,scope);
     }
 
-    private  <T extends Scope> Scope resolveScope(Class<T> singleScope) {
-        Scope scope = null;
-        if (this.scope == null) {
-            if (singleScope == null)
-                {
-                    try {
-                        scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
-                         } catch (InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                    }
-                }else {
-                    try {
-                            scope = singleScope.newInstance();
-                        } catch (InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+    private void instantiateBeanDefinition(Class beanAClass, Scope scope) {
+        BeanDefinition definition = new BeanDefinition(beanAClass,scope);
+        beanDefinitionMap.put(definition.getName(),definition);
+    }
+
+
+    private <T extends Scope> Scope instantiateScope(Class<T> scopeClass) {
+        Scope scope = scopes.get(scopeClass);
+        if (scope != null){
+            return scope;
+        }
+        if (scopeClass == null)
+        {
+            try {
+                scope = SingleScope.class.newInstance();//if not specify scope,default singlescope
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                scope = scopeClass.newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
+        scopes.put(scopeClass,scope);
         return scope;
     }
 
@@ -53,11 +58,11 @@ public class BeanDefintionContainer {
     }
 
     public Object getBean(Class beanAClass) throws Exception {
-       Object bean = scope.lookup(beanAClass);
+        BeanDefinition definition =  getBeanDefinition(beanAClass);
+        Object bean = definition.scopelookup();
         if (bean != null){
             return bean;
         }
-       BeanDefinition definition =  getBeanDefinition(beanAClass);
         if (definition == null){
             return null;
         }else {
@@ -81,13 +86,9 @@ public class BeanDefintionContainer {
                 }
             }
         }
-        Object object = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
-        registScope(definition.beanClass,object);
-        return object;
-    }
-
-    private void registScope(Class beanClass, Object object) {
-        scope.regist(beanClass,object);
+        Object bean = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
+        definition.registScope(bean);
+        return bean;
     }
 
 }
