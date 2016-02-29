@@ -2,6 +2,7 @@ package wangyiran.bean;
 
 import wangyiran.bean.point.CtorInjectPoint;
 import wangyiran.bean.point.MethodInjectPoint;
+import wangyiran.bean.resolve.Resolver;
 import wangyiran.bean.scope.Scope;
 
 import java.util.List;

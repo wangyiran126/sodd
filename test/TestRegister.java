@@ -12,11 +12,9 @@ import wangyiran.bean.listener.RequestContextListener;
 import wangyiran.bean.scope.SessionScope;
 import wangyiran.bean.scope.SingleScope;
 
-import javax.persistence.Table;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import regist.utils.ServletsMockitoUtils.*;
 
 import static regist.utils.ServletsMockitoUtils.createHttpRequest;
 import static regist.utils.ServletsMockitoUtils.createSession;

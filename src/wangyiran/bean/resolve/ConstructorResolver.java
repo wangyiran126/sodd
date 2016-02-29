@@ -1,10 +1,10 @@
-package wangyiran.bean.tool;
+package wangyiran.bean.resolve;
 
 import wangyiran.bean.ConstructorDescription;
 import wangyiran.bean.description.ClassDescription;
 import wangyiran.bean.point.CtorInjectPoint;
 import wangyiran.bean.annotation.InjectConstructor;
-import wangyiran.bean.factory.CtorInjectPointFactory;
+import wangyiran.bean.factory.InjectPointFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -15,10 +15,10 @@ import java.util.List;
  * Created by wangyiran on 25/2/2016.
  */
 public class ConstructorResolver {
-    private CtorInjectPointFactory ctorInjectPointFactory;
+    private InjectPointFactory injectPointFactory;
 
-    public ConstructorResolver(CtorInjectPointFactory ctorInjectPointFactory) {
-        this.ctorInjectPointFactory = ctorInjectPointFactory;
+    public ConstructorResolver(InjectPointFactory injectPointFactory) {
+        this.injectPointFactory = injectPointFactory;
     }
 
     public CtorInjectPoint resolveCtorInjectPoint(Class beanClass) {
@@ -43,7 +43,7 @@ public class ConstructorResolver {
             annotationCtor = defaultCtor;
         }
 
-        return ctorInjectPointFactory.createInjectConstructor(annotationCtor,annotationCtor.getParameterTypes());
+        return injectPointFactory.createInjectConstructor(annotationCtor,annotationCtor.getParameterTypes());
     }
 
 }

@@ -1,37 +1,24 @@
-package wangyiran.bean;
-
-/**
- * Created by wangyiran on 25/2/2016.
- */
+package wangyiran.bean.resolve;
 
 import wangyiran.bean.annotation.InjectMethod;
-import wangyiran.bean.factory.CtorInjectPointFactory;
-import wangyiran.bean.point.CtorInjectPoint;
+import wangyiran.bean.factory.InjectPointFactory;
 import wangyiran.bean.point.MethodInjectPoint;
-import wangyiran.bean.tool.ConstructorResolver;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * hold all resolvers
+ * Created by wangyiran on 29/2/2016.
  */
-public class Resolver {
-    private ConstructorResolver constructorResolver;
-
-    public Resolver() {
-        this.constructorResolver = new ConstructorResolver(new CtorInjectPointFactory());
+public class MethodResolver {
+    private InjectPointFactory injectPointFactory;
+    public MethodResolver(InjectPointFactory injectPointFactory) {
+        this.injectPointFactory = injectPointFactory;
     }
-
-    public CtorInjectPoint createCtorInjectPoint(Class beanClass) {
-        return constructorResolver.resolveCtorInjectPoint(beanClass);
-    }
-
 
     public List<MethodInjectPoint> resolveMethodInjectPoint(Class beanClass) {
-        //TODO 获取class的所有method
+        //获取class的所有method
         Method[] methods= beanClass.getDeclaredMethods();
         List<MethodInjectPoint> methodInjectPoints = new ArrayList<>();
         //寻找所有满足注入的方法
@@ -46,9 +33,10 @@ public class Resolver {
             if (injectMethod == null){
                 continue;
             }
-            methodInjectPoints.add(new MethodInjectPoint(method,method.getParameterTypes()));
+            MethodInjectPoint methodInjectPoint = injectPointFactory.createMethodInjectPoint(method,method.getParameterTypes());
+            methodInjectPoints.add(methodInjectPoint);
         }
 
-            return methodInjectPoints;
+        return methodInjectPoints;
     }
 }
