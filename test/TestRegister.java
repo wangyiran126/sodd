@@ -25,7 +25,7 @@ import static regist.utils.ServletsMockitoUtils.createSession;
  */
 public class TestRegister {
     @Test
-    public void testRegist() throws Exception {
+    public void testRegist(){
         BeanDefintionContainer container = new BeanDefintionContainer();
         container.regist(BeanA.class, SingleScope.class);
         container.regist(BeanB.class,null);
@@ -39,7 +39,7 @@ public class TestRegister {
     }
 
     @Test
-    public void testMockSession() throws Exception {
+    public void testMockSession(){
         //simulate session
         HttpSession httpSession = createSession();
         httpSession.setAttribute("a","b");
@@ -59,7 +59,7 @@ public class TestRegister {
     }
 
     @Test
-    public void testSessionScope() throws Exception {
+    public void testSessionScope(){
         HttpSession httpSession = createSession();
         HttpServletRequest httpRequest = createHttpRequest(httpSession);
         ServletRequestEvent event =ServletsMockitoUtils.createServletRequestEvent(httpRequest);
@@ -75,7 +75,7 @@ public class TestRegister {
     }
 
     @Test
-    public void testAnnotationScope() throws Exception {
+    public void testAnnotationScope() {
         HttpSession httpSession = createSession();
         HttpServletRequest httpRequest = createHttpRequest(httpSession);
         ServletRequestEvent event =ServletsMockitoUtils.createServletRequestEvent(httpRequest);
@@ -92,7 +92,7 @@ public class TestRegister {
     }
 
     @Test
-    public void testMethodInject() throws Exception {
+    public void testMethodInject(){
         BeanDefintionContainer container = new BeanDefintionContainer();
         container.regist(BeanC.class,null);
         container.regist(BeanA.class,null);

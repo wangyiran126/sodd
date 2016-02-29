@@ -19,7 +19,7 @@ import java.util.Map;
 public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
     private Map<Class<? extends Scope>,Scope> scopes = new HashMap<>();
-    public void regist(Class beanAClass, Class<? extends Scope> singleScope) throws Exception {
+    public void regist(Class beanAClass, Class<? extends Scope> singleScope)  {
         Scope scope = instantiateScope(beanAClass,singleScope);
         instantiateBeanDefinition(beanAClass,scope);
     }
@@ -30,7 +30,7 @@ public class BeanDefintionContainer {
     }
 
 
-    private  Scope instantiateScope(Class beanAClass, Class<? extends Scope> scopeClass) throws Exception {
+    private  Scope instantiateScope(Class beanAClass, Class<? extends Scope> scopeClass) {
         Scope scope = scopes.get(scopeClass);
         if (scope != null){
             return scope;
@@ -44,7 +44,7 @@ public class BeanDefintionContainer {
         try {
             scope = scopeClass.newInstance();
         } catch (Exception e) {
-           throw new Exception("创建bean :"+scopeClass+"失败");
+           throw new BeanUncheckedException("创建bean :"+scopeClass+"失败");
         }
         scopes.put(scopeClass,scope);
         return scope;
@@ -60,7 +60,7 @@ public class BeanDefintionContainer {
         return beanDefinitionMap.get(name);
     }
 
-    public Object getBean(Class beanAClass) throws Exception {
+    public Object getBean(Class beanAClass){
         BeanDefinition definition =  getBeanDefinition(beanAClass);
         if (definition == null){
             throw new BeanUncheckedException(beanAClass+"没有regist");
@@ -76,7 +76,7 @@ public class BeanDefintionContainer {
         }
     }
 
-    private Object createBean(BeanDefinition definition) throws Exception {
+    private Object createBean(BeanDefinition definition)  {
         if (definition.ctorInjectPoint == null){
             definition.ctorInjectPoint = definition.resolver.createCtorInjectPoint(definition.beanClass);
         }
@@ -92,13 +92,18 @@ public class BeanDefintionContainer {
                 }
             }
         }
-        Object bean = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
-        definition.registScope(bean);
-        wireMethod(definition,bean);
-        return bean;
+        try{
+            Object bean = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
+            definition.registScope(bean);
+            wireMethod(definition,bean);
+            return bean;
+        }catch (Exception e){
+            throw new BeanUncheckedException(definition.beanClass+"invoke constructor  "+definition.ctorInjectPoint.constructor+" failed",e);
+        }
+
     }
 
-    private void wireMethod(BeanDefinition definition, Object bean) throws Exception {
+    private void wireMethod(BeanDefinition definition, Object bean) {
         if (definition.methodInjectPoints == null){
             definition.methodInjectPoints = definition.resolver.resolveMethodInjectPoint(definition.beanClass);
         }
@@ -109,7 +114,11 @@ public class BeanDefintionContainer {
             for (int i = 0; i < parameterTypes.length ;i++) {
                 parameterBeans[i] = getBean(parameterTypes[i]);
             }
-            method.invoke(bean,parameterBeans);
+            try{
+                method.invoke(bean,parameterBeans);
+            }catch (Exception e){
+                throw new BeanUncheckedException(definition.beanClass +"invoke "+method +"failed",e);
+            }
         }
 
     }
