@@ -2,6 +2,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import regist.BeanA;
 import regist.BeanB;
+import regist.BeanC;
 import regist.session.SessionAnnoBean;
 import regist.session.SessionBeanA;
 import regist.utils.ServletsMockitoUtils;
@@ -90,6 +91,19 @@ public class TestRegister {
         Assert.assertNotNull(beanA);
         SessionAnnoBean beanA2 = (SessionAnnoBean) container.getBean(SessionAnnoBean.class);
         Assert.assertEquals(beanA,beanA2);
+    }
+
+    @Test
+    public void testMethodInject() throws Exception {
+        BeanDefintionContainer container = new BeanDefintionContainer();
+        container.regist(BeanC.class,null);
+        container.regist(BeanA.class,null);
+        container.regist(BeanB.class,null);
+
+        BeanC beanC = (BeanC) container.getBean(BeanC.class);
+        Assert.assertNotNull(beanC);
+        Assert.assertTrue(beanC.getScore() != null);
+        Assert.assertTrue(beanC.getTotal() == null );
     }
 
 

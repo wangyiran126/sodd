@@ -1,4 +1,4 @@
-package wangyiran.bean;
+package wangyiran.bean.point;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.TypeVariable;

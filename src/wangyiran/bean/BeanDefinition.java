@@ -1,11 +1,10 @@
 package wangyiran.bean;
 
+import wangyiran.bean.point.CtorInjectPoint;
+import wangyiran.bean.point.MethodInjectPoint;
 import wangyiran.bean.scope.Scope;
-import wangyiran.bean.tool.ClassTool;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Created by wangyiran on 25/2/2016.
@@ -15,6 +14,7 @@ public class BeanDefinition {
     private String name;
     public Resolver resolver;
     public CtorInjectPoint ctorInjectPoint;
+    public List<MethodInjectPoint> methodInjectPoints;
     public Scope scope;
     public BeanDefinition(Class beanAClass, Scope scope) {
         this.beanClass = beanAClass;

@@ -1,6 +1,6 @@
 package wangyiran.bean.factory;
 
-import wangyiran.bean.CtorInjectPoint;
+import wangyiran.bean.point.CtorInjectPoint;
 
 import java.lang.reflect.Constructor;
 

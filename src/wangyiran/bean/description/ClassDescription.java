@@ -1,10 +1,8 @@
-package wangyiran.bean.tool;
+package wangyiran.bean.description;
 
-import wangyiran.bean.ConstructorDescription;
+import wangyiran.bean.tool.Inspects;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by wangyiran on 25/2/2016.

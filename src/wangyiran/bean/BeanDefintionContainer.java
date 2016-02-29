@@ -1,11 +1,14 @@
 package wangyiran.bean;
 
 import wangyiran.bean.annotation.ScopeAnnotation;
+import wangyiran.bean.point.MethodInjectPoint;
 import wangyiran.bean.scope.Scope;
 import wangyiran.bean.scope.SingleScope;
 import wangyiran.bean.tool.ClassTool;
 
+import java.beans.MethodDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +95,24 @@ public class BeanDefintionContainer {
         }
         Object bean = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
         definition.registScope(bean);
+        wireMethod(definition,bean);
         return bean;
+    }
+
+    private void wireMethod(BeanDefinition definition, Object bean) throws Exception {
+        if (definition.methodInjectPoints == null){
+            definition.methodInjectPoints = definition.resolver.resolveMethodInjectPoint(definition.beanClass);
+        }
+        Object[] parameterBeans = new Object[definition.methodInjectPoints.size()];
+        for (MethodInjectPoint methodInjectPoint : definition.methodInjectPoints){
+            Method method = methodInjectPoint.getMethod();
+            Class[] parameterTypes = methodInjectPoint.getParameterTypes();
+            for (int i = 0; i < parameterTypes.length ;i++) {
+                parameterBeans[i] = getBean(parameterTypes[i]);
+            }
+            method.invoke(bean,parameterBeans);
+        }
+
     }
 
 }

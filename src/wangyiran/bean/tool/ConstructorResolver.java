@@ -1,7 +1,8 @@
 package wangyiran.bean.tool;
 
 import wangyiran.bean.ConstructorDescription;
-import wangyiran.bean.CtorInjectPoint;
+import wangyiran.bean.description.ClassDescription;
+import wangyiran.bean.point.CtorInjectPoint;
 import wangyiran.bean.annotation.InjectConstructor;
 import wangyiran.bean.factory.CtorInjectPointFactory;
 
