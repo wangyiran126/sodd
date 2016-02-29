@@ -1,6 +1,7 @@
 package wangyiran.bean;
 
 import wangyiran.bean.annotation.ScopeAnnotation;
+import wangyiran.bean.exception.BeanUncheckedException;
 import wangyiran.bean.point.MethodInjectPoint;
 import wangyiran.bean.scope.Scope;
 import wangyiran.bean.scope.SingleScope;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class BeanDefintionContainer {
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
     private Map<Class<? extends Scope>,Scope> scopes = new HashMap<>();
-    public void regist(Class beanAClass, Class<? extends Scope> singleScope) {
+    public void regist(Class beanAClass, Class<? extends Scope> singleScope) throws Exception {
         Scope scope = instantiateScope(beanAClass,singleScope);
         instantiateBeanDefinition(beanAClass,scope);
     }
@@ -29,7 +30,7 @@ public class BeanDefintionContainer {
     }
 
 
-    private  Scope instantiateScope(Class beanAClass, Class<? extends Scope> scopeClass) {
+    private  Scope instantiateScope(Class beanAClass, Class<? extends Scope> scopeClass) throws Exception {
         Scope scope = scopes.get(scopeClass);
         if (scope != null){
             return scope;
@@ -42,10 +43,8 @@ public class BeanDefintionContainer {
         }
         try {
             scope = scopeClass.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+           throw new Exception("创建bean :"+scopeClass+"失败");
         }
         scopes.put(scopeClass,scope);
         return scope;
@@ -64,7 +63,7 @@ public class BeanDefintionContainer {
     public Object getBean(Class beanAClass) throws Exception {
         BeanDefinition definition =  getBeanDefinition(beanAClass);
         if (definition == null){
-            throw new Exception(beanAClass+"没有regist");
+            throw new BeanUncheckedException(beanAClass+"没有regist");
         }
         Object bean = definition.scopelookup();
         if (bean != null){
@@ -89,7 +88,7 @@ public class BeanDefintionContainer {
                 Class reference = references[i];
                 beanArgs[i] = getBean(reference);
                 if (beanArgs[i] == null){
-                    throw new Exception(reference+ "没有regist");
+                    throw new BeanUncheckedException(reference+ "没有regist");
                 }
             }
         }
