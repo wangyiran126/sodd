@@ -80,6 +80,22 @@ public class BeanDefintionContainer {
         if (definition.ctorInjectPoint == null){
             definition.ctorInjectPoint = definition.resolver.createCtorInjectPoint(definition.beanClass);
         }
+        try{
+            Object bean = createBeanWithConstructor(definition);
+            registMethodInject(definition,bean);
+            return bean;
+        }catch (Exception e){
+            throw new BeanUncheckedException(definition.beanClass+"invoke constructor  "+definition.ctorInjectPoint.constructor+" failed",e);
+        }
+
+    }
+
+    private void registMethodInject(BeanDefinition definition, Object bean) {
+        definition.registScope(bean);
+        wireMethod(definition,bean);
+    }
+
+    public Object createBeanWithConstructor(BeanDefinition definition){
         Class[] references = definition.ctorInjectPoint.references;
         Object[] beanArgs = new Object[0];
         if (references != null && references.length > 0){
@@ -94,15 +110,11 @@ public class BeanDefintionContainer {
         }
         try{
             Object bean = definition.ctorInjectPoint.constructor.newInstance(beanArgs);
-            definition.registScope(bean);
-            wireMethod(definition,bean);
             return bean;
         }catch (Exception e){
             throw new BeanUncheckedException(definition.beanClass+"invoke constructor  "+definition.ctorInjectPoint.constructor+" failed",e);
         }
-
     }
-
     private void wireMethod(BeanDefinition definition, Object bean) {
         if (definition.methodInjectPoints == null){
             definition.methodInjectPoints = definition.resolver.resolveMethodInjectPoint(definition.beanClass);
